@@ -3,18 +3,22 @@ class AgentToolkit < Formula
 
   desc "Composable AI agent toolkit — loops, skills, profiles for Claude Code, Cursor, OpenCode, Windsurf, and more"
   homepage "https://github.com/ulises-jeremias/agent-toolkit"
-  url "https://github.com/ulises-jeremias/agent-toolkit/archive/refs/tags/v1.3.0.tar.gz"
-  sha256 "1d23e5ca818c39c07095d79cabda4c376c612ba81339cf59bb6e4c6d2bdab409"
+  url "https://github.com/ulises-jeremias/agent-toolkit/archive/refs/tags/v1.4.1.tar.gz"
+  sha256 "47c90978f74c4824e335e2330125232143997144c2958a220c5108825bb645b1"
   license "MIT"
   head "https://github.com/ulises-jeremias/agent-toolkit.git", branch: "main"
 
   depends_on "python@3.11"
 
   def install
-    # Ensure bundled skills/loops/agent data are prepared before building the wheel —
-    # the source tarball requires scripts/prepare-package-data.sh (PyPI wheels already contain it).
+    # Source tarballs do not contain pre-built package data — they must be prepared.
     # See https://github.com/ulises-jeremias/agent-toolkit/issues/257
-    system "bash", "scripts/prepare-package-data.sh" if File.exist?("scripts/prepare-package-data.sh")
+    odie "scripts/prepare-package-data.sh not found — source tarball missing bundled data preparation script" unless File.exist?("scripts/prepare-package-data.sh")
+    system "bash", "scripts/prepare-package-data.sh"
+    # Verify prepared data exists before building the wheel (built from packages/agent-toolkit-cli)
+    odie "bundled data not found after prepare-package-data.sh — expected packages/agent-toolkit-cli/src/agent_toolkit/data/skills" unless File.exist?("packages/agent-toolkit-cli/src/agent_toolkit/data/skills")
+    odie "bundled data not found after prepare-package-data.sh — expected packages/agent-toolkit-cli/src/agent_toolkit/data/loops" unless File.exist?("packages/agent-toolkit-cli/src/agent_toolkit/data/loops")
+
     venv = virtualenv_create(libexec, "python3.11")
     venv.pip_install buildpath
 
@@ -25,5 +29,8 @@ class AgentToolkit < Formula
   test do
     output = shell_output("#{bin}/agent-toolkit version")
     assert_match "agent-toolkit", output
+    # Verify bundled data is detected via doctor (loops/skills bundled in wheel)
+    doctor_output = shell_output("#{bin}/agent-toolkit doctor")
+    assert_match "loop templates", doctor_output
   end
 end
