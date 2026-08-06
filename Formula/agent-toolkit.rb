@@ -11,6 +11,10 @@ class AgentToolkit < Formula
   depends_on "python@3.11"
 
   def install
+    # Ensure bundled skills/loops/agent data are prepared before building the wheel —
+    # the source tarball requires scripts/prepare-package-data.sh (PyPI wheels already contain it).
+    # See https://github.com/ulises-jeremias/agent-toolkit/issues/257
+    system "bash", "scripts/prepare-package-data.sh" if File.exist?("scripts/prepare-package-data.sh")
     venv = virtualenv_create(libexec, "python3.11")
     venv.pip_install buildpath
 
