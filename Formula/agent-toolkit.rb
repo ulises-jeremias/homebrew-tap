@@ -3,8 +3,8 @@ class AgentToolkit < Formula
 
   desc "Composable AI agent toolkit — loops, skills, profiles for Claude Code, Cursor, OpenCode, Windsurf, and more"
   homepage "https://github.com/ulises-jeremias/agent-toolkit"
-  url "https://github.com/ulises-jeremias/agent-toolkit/archive/refs/tags/v1.5.0.tar.gz"
-  sha256 "420f67baa5a0a0d67b517cc8ac720218efb21ee8609d830427a03a86cbc6309b"
+  url "https://github.com/ulises-jeremias/agent-toolkit/archive/refs/tags/v1.5.1.tar.gz"
+  sha256 "27750fc408977fc919cd462ef689155874522d1c1c41823264bb3b7c624793ea"
   license "MIT"
   head "https://github.com/ulises-jeremias/agent-toolkit.git", branch: "main"
 
