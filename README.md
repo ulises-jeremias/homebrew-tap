@@ -13,7 +13,7 @@ brew install agent-toolkit
 
 | Formula | Description | Install |
 |---------|-------------|---------|
-| [agent-toolkit](Formula/agent-toolkit.rb) | Native V CLI from GitHub Releases (not a Python wheel) | `brew install ulises-jeremias/homebrew-tap/agent-toolkit` |
+| [agent-toolkit](Formula/agent-toolkit.rb) | Composable AI agent toolkit — loops, skills, profiles for Claude Code, Cursor, OpenCode, Windsurf, and more | `brew install ulises-jeremias/homebrew-tap/agent-toolkit` |
 
 ## Adding a new formula
 
@@ -24,5 +24,4 @@ brew install agent-toolkit
 ## Auto-update mechanism
 
 Each formula auto-updates via `repository_dispatch` events sent by the package's release CI.
-The `update-formula.yml` workflow opens an **auditable PR** (checksum review) rather than force-pushing `main`.
-Pass `formula_name` and `version`. `agent-toolkit` installs GitHub Release **V binaries** (ADR-018 names), not the Python source tarball.
+The `update-formula.yml` workflow handles any formula — just pass `formula_name` and `version`.
