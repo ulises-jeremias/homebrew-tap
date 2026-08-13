@@ -1,6 +1,6 @@
 # Generic formula updater — triggered via repository_dispatch from any package repo.
 # Payload: { formula_name: "agent-toolkit", version: "1.0.0" }
-# Or: workflow_dispatch with formula_name and version inputs.
+# Opens an auditable PR instead of force-pushing main.
 name: Update Formula
 
 on:
@@ -25,20 +25,24 @@ jobs:
     environment: homebrew
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
-          # PAT with repo scope — GITHUB_TOKEN cannot push from this workflow
-          # when the default token lacks write (repository_dispatch + env).
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
 
       - name: Resolve inputs
         id: inputs
+        env:
+          PAYLOAD_FORMULA: ${{ github.event.client_payload.formula_name }}
+          PAYLOAD_VERSION: ${{ github.event.client_payload.version }}
+          INPUT_FORMULA: ${{ github.event.inputs.formula_name }}
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
-          FORMULA_NAME="${{ github.event.client_payload.formula_name || github.event.inputs.formula_name }}"
-          VERSION="${{ github.event.client_payload.version || github.event.inputs.version }}"
+          FORMULA_NAME="${PAYLOAD_FORMULA:-$INPUT_FORMULA}"
+          VERSION="${PAYLOAD_VERSION:-$INPUT_VERSION}"
           if [ -z "$FORMULA_NAME" ] || [ -z "$VERSION" ]; then
-            echo "::error::formula_name and version are required (got formula='$FORMULA_NAME' version='$VERSION')"
+            echo "::error::formula_name and version are required"
             exit 1
           fi
           if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([a-zA-Z0-9.+-]+)?$'; then
@@ -47,103 +51,41 @@ jobs:
           fi
           echo "formula_name=$FORMULA_NAME" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Formula: $FORMULA_NAME  Version: $VERSION"
-
-      - name: Determine source URL and fetch checksum
-        id: source
-        run: |
-          FORMULA="${{ steps.inputs.outputs.formula_name }}"
-          VERSION="${{ steps.inputs.outputs.version }}"
-
-          FORMULA_FILE="Formula/${FORMULA}.rb"
-          if [ ! -f "$FORMULA_FILE" ]; then
-            echo "::error::Formula not found: $FORMULA_FILE"
-            exit 1
-          fi
-
-          CURRENT_URL=$(grep -E '^\s+url "' "$FORMULA_FILE" | head -1 | sed 's/.*url "//; s/".*//')
-          echo "Current URL pattern: $CURRENT_URL"
-
-          if echo "$CURRENT_URL" | grep -q "github.com"; then
-            URL="https://github.com/ulises-jeremias/${FORMULA}/archive/refs/tags/v${VERSION}.tar.gz"
-          elif echo "$CURRENT_URL" | grep -q "pypi"; then
-            PYPI_NAME=$(echo "$FORMULA" | tr '-' '_')
-            URL="https://files.pythonhosted.org/packages/source/${PYPI_NAME:0:1}/${PYPI_NAME}/${PYPI_NAME}-${VERSION}.tar.gz"
-          elif echo "$CURRENT_URL" | grep -q "registry.npmjs.org"; then
-            URL="https://registry.npmjs.org/${FORMULA}/-/${FORMULA}-${VERSION}.tgz"
-          else
-            echo "::error::Cannot detect source type from URL: $CURRENT_URL"
-            exit 1
-          fi
-
-          echo "New URL: $URL"
-
-          SHA256=""
-          for attempt in $(seq 1 36); do
-            echo "Attempt $attempt/36: downloading tarball..."
-            if curl -fsSL --retry 3 --retry-delay 2 "$URL" -o /tmp/pkg.tar.gz; then
-              SHA256=$(sha256sum /tmp/pkg.tar.gz | awk '{print $1}')
-              EMPTY_SHA="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-              SIZE=$(wc -c </tmp/pkg.tar.gz)
-              if [ "$SHA256" != "$EMPTY_SHA" ] && [ -n "$SHA256" ] && [ "$SIZE" -gt 100 ]; then
-                echo "SHA256: $SHA256 (size=$SIZE)"
-                break
-              fi
-            fi
-            if [ "$attempt" = "36" ]; then
-              echo "::error::Failed to download a valid tarball after 36 attempts"
-              exit 1
-            fi
-            echo "::warning::Attempt $attempt failed, retrying in 15s..."
-            sleep 15
-          done
-
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
 
       - name: Patch formula
+        env:
+          FORMULA_NAME: ${{ steps.inputs.outputs.formula_name }}
+          VERSION: ${{ steps.inputs.outputs.version }}
         run: |
-          FORMULA_FILE="Formula/${{ steps.inputs.outputs.formula_name }}.rb"
-          URL="${{ steps.source.outputs.url }}"
-          SHA256="${{ steps.source.outputs.sha256 }}"
+          set -euo pipefail
+          python3 scripts/patch_formula.py
+          grep -E '^[[:space:]]*(version|url|sha256) ' "Formula/${FORMULA_NAME}.rb"
+          grep -q "v${VERSION}" "Formula/${FORMULA_NAME}.rb"
 
-          sed -i "s|url \".*\"|url \"$URL\"|" "$FORMULA_FILE"
-          sed -i "s|sha256 \".*\"|sha256 \"$SHA256\"|" "$FORMULA_FILE"
-
-          echo "Updated $FORMULA_FILE:"
-          grep -E '^\s+(url|sha256) "' "$FORMULA_FILE"
-
-          # Sanity: formula must contain the target version in the URL
-          VERSION="${{ steps.inputs.outputs.version }}"
-          if ! grep -q "v${VERSION}\|/${VERSION}\.\|-${VERSION}\." "$FORMULA_FILE"; then
-            echo "::error::Patched formula does not reference version $VERSION"
-            cat "$FORMULA_FILE"
-            exit 1
-          fi
-
-      - name: Commit and push
+      - name: Commit on a review branch
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "feat(${{ steps.inputs.outputs.formula_name }}): update to v${{ steps.inputs.outputs.version }}"
           commit_user_name: "ulises-jeremias-bot"
           commit_user_email: "ulisescf.24@gmail.com"
           file_pattern: "Formula/*.rb"
-          push_options: --force-with-lease
+          branch: chore/${{ steps.inputs.outputs.formula_name }}-v${{ steps.inputs.outputs.version }}
+          create_branch: true
+          skip_fetch: true
 
-      - name: Verify formula on origin/main
+      - name: Open auditable PR
         env:
           GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          FORMULA: ${{ steps.inputs.outputs.formula_name }}
+          VERSION: ${{ steps.inputs.outputs.version }}
         run: |
-          FORMULA="${{ steps.inputs.outputs.formula_name }}"
-          VERSION="${{ steps.inputs.outputs.version }}"
-          for attempt in $(seq 1 12); do
-            CONTENT=$(gh api "repos/${{ github.repository }}/contents/Formula/${FORMULA}.rb" --jq .content | base64 -d)
-            if echo "$CONTENT" | grep -q "v${VERSION}"; then
-              echo "✓ origin Formula/${FORMULA}.rb references v${VERSION}"
-              exit 0
-            fi
-            echo "Attempt $attempt/12: remote formula not updated yet..."
-            sleep 5
-          done
-          echo "::error::Remote formula still missing v${VERSION}"
-          exit 1
+          set -euo pipefail
+          BRANCH="chore/${FORMULA}-v${VERSION}"
+          EXISTING="$(gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty')"
+          if [ -n "$EXISTING" ]; then
+            echo "PR already open: #$EXISTING"
+            exit 0
+          fi
+          gh pr create --base main --head "$BRANCH" \
+            --title "feat(${FORMULA}): update to v${VERSION}" \
+            --body "Automated formula bump for GitHub Release v${VERSION}. Review checksums, then squash-merge."
