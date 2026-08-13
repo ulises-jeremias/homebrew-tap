@@ -13,7 +13,7 @@ brew install agent-toolkit
 
 | Formula | Description | Install |
 |---------|-------------|---------|
-| [agent-toolkit](Formula/agent-toolkit.rb) | Composable AI agent toolkit — loops, skills, profiles for Claude Code, Cursor, OpenCode, Windsurf, and more | `brew install ulises-jeremias/homebrew-tap/agent-toolkit` |
+| [agent-toolkit](Formula/agent-toolkit.rb) | Native V CLI from GitHub Releases (not a Python wheel) | `brew install ulises-jeremias/homebrew-tap/agent-toolkit` |
 
 ## Adding a new formula
 
