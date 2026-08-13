@@ -6,7 +6,8 @@ class AgentToolkit < Formula
 
   # Canonical artifacts: GitHub Release floating names (agent-toolkit ADR-018).
   # Not a Python wheel. Not a Homebrew bottle of a source build.
-  # sha256 values are filled by .github/workflows/update-formula.yml on each release.
+  # All-zero sha256 is fail-closed until the first tag that attaches V assets
+  # (agent-toolkit#530). update-formula.yml then writes real checksums.
 
   on_macos do
     on_arm do

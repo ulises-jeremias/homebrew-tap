@@ -57,6 +57,11 @@ def _download_sha256(url: str) -> str:
                 data = resp.read()
             if len(data) > 100:
                 return hashlib.sha256(data).hexdigest()
+        except urllib.error.HTTPError as exc:
+            last_err = exc
+            if 400 <= exc.code < 500 and exc.code != 429:
+                raise SystemExit(f"{url} HTTP {exc.code}") from exc
+            print(f"attempt {attempt}/36 {url}: HTTP {exc.code}")
         except (OSError, TimeoutError, urllib.error.URLError) as exc:
             last_err = exc
             print(f"attempt {attempt}/36 {url}: {exc}")
