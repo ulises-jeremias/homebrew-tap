@@ -1,7 +1,7 @@
 class AgentToolkit < Formula
   desc "Composable AI agent toolkit — native V CLI (GitHub Release binaries)"
   homepage "https://github.com/ulises-jeremias/agent-toolkit"
-  version "1.15.1"
+  version "1.16.0"
   license "MIT"
 
   # Canonical artifacts: GitHub Release floating names (agent-toolkit ADR-018).
@@ -9,23 +9,23 @@ class AgentToolkit < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.15.1/agent-toolkit-macos-arm64"
-      sha256 "52a09ace0d61c500e3e1fdc02e9f8c53c9ef18b51fc0e57ec203f63392d82a1c"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.16.0/agent-toolkit-macos-arm64"
+      sha256 "617381d20f731a904865acea69deb1323519113b12de4d7bb3034ded9249f730"
     end
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.15.1/agent-toolkit-macos-x86_64"
-      sha256 "c7add9d388850a550d5e2d27901ed292a346a0e3b33b3dd1a629b55edaba919d"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.16.0/agent-toolkit-macos-x86_64"
+      sha256 "bd2df3037732e440ebaae6227a3ee31d6c8f611e578397704226d1335ca8298e"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.15.1/agent-toolkit-linux-x86_64"
-      sha256 "6e8965d288e29c5a7c4a9776d9430f48cac13a60fa4c1f9b1095fd2ba96ecc11"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.16.0/agent-toolkit-linux-x86_64"
+      sha256 "c19a47ca4763b127682d3461442e1fdcbe2a1d5cf58761302f4a49787eb7426a"
     end
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.15.1/agent-toolkit-linux-arm64"
-      sha256 "34e27baba16a90eccfd412f9a7316054eebbd78e79d05059266fb3df0ca827d2"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.16.0/agent-toolkit-linux-arm64"
+      sha256 "9470f48a476337cfc22960cf1018644cc1b978fff3385b80e4f2487a8a0c5bee"
     end
   end
 
