@@ -1,7 +1,7 @@
 class AgentToolkit < Formula
   desc "Composable AI agent toolkit — native V CLI (GitHub Release binaries)"
   homepage "https://github.com/ulises-jeremias/agent-toolkit"
-  version "1.15.1"
+  version "1.24.0"
   license "MIT"
 
   # Canonical artifacts: GitHub Release floating names (agent-toolkit ADR-018).
@@ -9,23 +9,23 @@ class AgentToolkit < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.15.1/agent-toolkit-macos-arm64"
-      sha256 "52a09ace0d61c500e3e1fdc02e9f8c53c9ef18b51fc0e57ec203f63392d82a1c"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.24.0/agent-toolkit-macos-arm64"
+      sha256 "2588ddb5c84a6e4b17f5f08fab07b588f5e0ae95848db4a2ee7ea121ad4cca50"
     end
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.15.1/agent-toolkit-macos-x86_64"
-      sha256 "c7add9d388850a550d5e2d27901ed292a346a0e3b33b3dd1a629b55edaba919d"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.24.0/agent-toolkit-macos-x86_64"
+      sha256 "0024d16c43aa09cf8900b9e1edb85e0561f1670ba1e80ca03113f37289d24b69"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.15.1/agent-toolkit-linux-x86_64"
-      sha256 "6e8965d288e29c5a7c4a9776d9430f48cac13a60fa4c1f9b1095fd2ba96ecc11"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.24.0/agent-toolkit-linux-x86_64"
+      sha256 "bfc96944c23b557a9d80a9b89324c58a5708002e29bec60a66e8e8ef60410c91"
     end
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.15.1/agent-toolkit-linux-arm64"
-      sha256 "34e27baba16a90eccfd412f9a7316054eebbd78e79d05059266fb3df0ca827d2"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.24.0/agent-toolkit-linux-arm64"
+      sha256 "136383f439c570a429a4428e606d7d5d2de9ac0e79f18fb7cd39237fec7edb15"
     end
   end
 
