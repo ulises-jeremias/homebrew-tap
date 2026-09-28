@@ -1,7 +1,7 @@
 class AgentToolkit < Formula
   desc "Composable AI agent toolkit — native V CLI (GitHub Release binaries)"
   homepage "https://github.com/ulises-jeremias/agent-toolkit"
-  version "1.30.3"
+  version "1.33.1"
   license "MIT"
 
   # Canonical artifacts: GitHub Release floating names (agent-toolkit ADR-018).
@@ -9,23 +9,23 @@ class AgentToolkit < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.30.3/agent-toolkit-macos-arm64"
-      sha256 "2b04d67bfe8b901a2ebd797f377d4f7d2fc46c4761890be3b19b245e09c81cd3"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.33.1/agent-toolkit-macos-arm64"
+      sha256 "b1e82d26d7d857af195b0d788f2744cafee15c91c448f5da6af5803c0be45a0b"
     end
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.30.3/agent-toolkit-macos-x86_64"
-      sha256 "8428077e2591a2b689d3209554a5c829b65e15b7ede29c4c22fa42f283120e31"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.33.1/agent-toolkit-macos-x86_64"
+      sha256 "5f5a0542c4ff5c17177a1ae5fbf5ee6b98e88ad11b89a9eef5f5d52d9d846a16"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.30.3/agent-toolkit-linux-x86_64"
-      sha256 "ecf3737c0ddb051efb03f4db91c37eaf87de0b7fd2deb44a4855657c2b5b96f8"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.33.1/agent-toolkit-linux-x86_64"
+      sha256 "0a8bad8ea44dcdb774f696455e954f2ca8a49e49c494dc7251260642e578b665"
     end
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.30.3/agent-toolkit-linux-arm64"
-      sha256 "4ab5bd39cb3ec08f51810fc2f6763576fe2f63388b10a48df17278845294a033"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.33.1/agent-toolkit-linux-arm64"
+      sha256 "146536311eb5dacde5591f133df6163d7c02272791d05ff8983f1d8cf29d6e8c"
     end
   end
 
