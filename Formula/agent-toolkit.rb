@@ -1,7 +1,7 @@
 class AgentToolkit < Formula
   desc "Composable AI agent toolkit — native V CLI (GitHub Release binaries)"
   homepage "https://github.com/ulises-jeremias/agent-toolkit"
-  version "1.30.3"
+  version "1.41.0"
   license "MIT"
 
   # Canonical artifacts: GitHub Release floating names (agent-toolkit ADR-018).
@@ -9,23 +9,23 @@ class AgentToolkit < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.30.3/agent-toolkit-macos-arm64"
-      sha256 "2b04d67bfe8b901a2ebd797f377d4f7d2fc46c4761890be3b19b245e09c81cd3"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.41.0/agent-toolkit-macos-arm64"
+      sha256 "5edc303795738c82b6fda07ea3bfbb598cf8d032b4782ec52d1cfb92ab2c10d3"
     end
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.30.3/agent-toolkit-macos-x86_64"
-      sha256 "8428077e2591a2b689d3209554a5c829b65e15b7ede29c4c22fa42f283120e31"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.41.0/agent-toolkit-macos-x86_64"
+      sha256 "c373fee8c545f78d2b6b8be2c1780b79a2fd1c8c03f8e6cdfdd0445fae90183c"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.30.3/agent-toolkit-linux-x86_64"
-      sha256 "ecf3737c0ddb051efb03f4db91c37eaf87de0b7fd2deb44a4855657c2b5b96f8"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.41.0/agent-toolkit-linux-x86_64"
+      sha256 "e7d86daa2c983a4b4c5ae8891bc6d7272659b8d898a81dcdad6561ca938019e8"
     end
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.30.3/agent-toolkit-linux-arm64"
-      sha256 "4ab5bd39cb3ec08f51810fc2f6763576fe2f63388b10a48df17278845294a033"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.41.0/agent-toolkit-linux-arm64"
+      sha256 "256079d7848cc494635521cf1f2708216efe17dcfd372861e221a0d2d178541b"
     end
   end
 
