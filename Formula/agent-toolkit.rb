@@ -4,8 +4,9 @@ class AgentToolkit < Formula
   version "1.45.1"
   license "MIT"
 
-  # Canonical artifacts: GitHub Release floating names (agent-toolkit ADR-018).
-  # Not a Python wheel. Not a Homebrew bottle of a source build.
+  # GitHub Release binaries are used until a release publishes versioned
+  # standalone archives. The updater switches these URLs to archives, which
+  # contain the executable, its pinned offline bundle, and the license.
 
   on_macos do
     on_arm do
@@ -30,7 +31,19 @@ class AgentToolkit < Formula
   end
 
   def install
-    bin.install Dir["agent-toolkit*"].first => "agent-toolkit"
+    binary = Dir["agent-toolkit*"].find do |path|
+      File.file?(path) && !path.end_with?(".tar.gz", ".zip", ".bundle.gz")
+    end
+    raise "GitHub Release did not provide an Agent Toolkit executable" unless binary
+
+    bin.install binary => "agent-toolkit"
+    if url.end_with?(".tar.gz") && !File.file?("embedded_data.bundle.gz")
+      raise "standalone release archive is missing its offline resource bundle"
+    end
+    if File.file?("embedded_data.bundle.gz")
+      bin.install "embedded_data.bundle.gz"
+      lib.install "LICENSE" if File.file?("LICENSE")
+    end
   end
 
   test do
@@ -40,7 +53,7 @@ class AgentToolkit < Formula
 
   def caveats
     <<~EOS
-      This formula installs the native V binary from GitHub Releases
+      This formula installs the native V binary and matching offline resources from GitHub Releases
       (https://github.com/ulises-jeremias/agent-toolkit/releases), not the
       Python wheel. `brew upgrade` owns the binary; `agent-toolkit update`
       only refreshes skills/profiles.
