@@ -82,53 +82,39 @@ jobs:
       - name: Commit and open auditable PR
         env:
           GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          GH_PR_TOKEN: ${{ github.token }}
           FORMULA: ${{ steps.inputs.outputs.formula_name }}
           VERSION: ${{ steps.inputs.outputs.version }}
         run: |
           set -euo pipefail
           BRANCH="chore/${FORMULA}-v${VERSION}"
+          EXISTING="$(gh pr list --head "$BRANCH" --state all --json number,state --jq '.[0] | if . then "#\(.number) (\(.state))" else empty end')"
+          if [ -n "$EXISTING" ]; then
+            echo "PR already exists for this release: $EXISTING"
+            exit 0
+          fi
           if git diff --quiet -- Formula/; then
             echo "No formula changes; skipping PR"
             exit 0
           fi
           git config user.name "ulises-jeremias-bot"
           git config user.email "ulisescf.24@gmail.com"
-          git checkout -B "$BRANCH"
           git add Formula/*.rb
-          git commit -m "feat(${FORMULA}): update to v${VERSION}"
-          git push -u "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${BRANCH}"
-
-          # Prefer GITHUB_TOKEN for PR create (requires repo setting
-          # "Allow GitHub Actions to create and approve pull requests").
-          # Fall back to HOMEBREW_TAP_TOKEN when that setting is off or the
-          # token lacks permission — PAT must include Pull requests: Write.
-          EXISTING="$(GH_TOKEN="$GH_PR_TOKEN" gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty' || true)"
-          if [ -z "$EXISTING" ]; then
-            EXISTING="$(GH_TOKEN="$GH_TOKEN" gh pr list --head "$BRANCH" --json number --jq '.[0].number // empty' || true)"
-          fi
-          if [ -n "$EXISTING" ]; then
-            echo "PR already open: #$EXISTING"
-            exit 0
+          if git ls-remote --exit-code origin "refs/heads/${BRANCH}" >/dev/null 2>&1; then
+            git fetch origin "refs/heads/${BRANCH}"
+            if ! git diff --quiet FETCH_HEAD -- "Formula/${FORMULA}.rb"; then
+              echo "::error::Existing branch ${BRANCH} differs from the requested formula; refusing to overwrite it"
+              exit 1
+            fi
+            git checkout -B "$BRANCH" FETCH_HEAD
+          else
+            git checkout -B "$BRANCH"
+            git commit -m "feat(${FORMULA}): update to v${VERSION}"
+            git push -u "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${BRANCH}"
           fi
 
           TITLE="feat(${FORMULA}): update to v${VERSION}"
           BODY="Automated formula bump for GitHub Release v${VERSION}. Review checksums, then squash-merge."
-          ERR="$(mktemp)"
-          if GH_TOKEN="$GH_PR_TOKEN" gh pr create --base main --head "$BRANCH" --title "$TITLE" --body "$BODY" 2>"$ERR"; then
-            echo "Opened PR with GITHUB_TOKEN"
-            rm -f "$ERR"
-            exit 0
-          fi
-          if grep -q "not permitted to create or approve pull requests" "$ERR"; then
-            echo "::warning::GITHUB_TOKEN cannot create PRs (enable Actions → Allow GitHub Actions to create and approve pull requests). Falling back to HOMEBREW_TAP_TOKEN."
-            if GH_TOKEN="$GH_TOKEN" gh pr create --base main --head "$BRANCH" --title "$TITLE" --body "$BODY"; then
-              echo "Opened PR with HOMEBREW_TAP_TOKEN"
-              rm -f "$ERR"
-              exit 0
-            fi
-          fi
-          echo "::error::Failed to open formula PR"
-          cat "$ERR" >&2
-          rm -f "$ERR"
-          exit 1
+          # Use the existing tap token so the PR's pull_request validation
+          # workflow runs. GITHUB_TOKEN-created PRs suppress follow-up runs and
+          # leave an action_required status with no jobs.
+          gh pr create --base main --head "$BRANCH" --title "$TITLE" --body "$BODY"
