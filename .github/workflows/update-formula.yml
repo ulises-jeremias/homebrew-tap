@@ -4,6 +4,11 @@
 name: Update Formula
 
 on:
+  pull_request:
+    paths:
+      - "Formula/**"
+      - "scripts/**"
+      - ".github/workflows/update-formula.yml"
   repository_dispatch:
     types: [new-release]
   workflow_dispatch:
@@ -20,7 +25,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test formula updater validation
+        run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+
   update:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment: homebrew
     permissions:
