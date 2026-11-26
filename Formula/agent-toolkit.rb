@@ -1,7 +1,7 @@
 class AgentToolkit < Formula
   desc "Composable AI agent toolkit — native V CLI (GitHub Release binaries)"
   homepage "https://github.com/ulises-jeremias/agent-toolkit"
-  version "1.50.0"
+  version "1.51.1"
   license "MIT"
 
   # GitHub Release binaries are used until a release publishes versioned
@@ -10,23 +10,23 @@ class AgentToolkit < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.50.0/agent-toolkit-1.50.0-macos-arm64.tar.gz"
-      sha256 "9698ed2429a7fe3abbe34a7e4626bb854240bb4ed8bbb551148191cdfc39824e"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.51.1/agent-toolkit-1.51.1-macos-arm64.tar.gz"
+      sha256 "28cc8f4d767eb8e0aea6ad7560027637493d43f74093bf92264a87f18943ddf7"
     end
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.50.0/agent-toolkit-1.50.0-macos-x86_64.tar.gz"
-      sha256 "dd53cd7a3b6f6ebba14b5e8cf27de160c24bee6d88af4abbaaacdb9cb8399cc3"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.51.1/agent-toolkit-1.51.1-macos-x86_64.tar.gz"
+      sha256 "151f6277db9dcb34ed89940061abfd1b9d5e7172a06cfefbc19a4f797ca2c768"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.50.0/agent-toolkit-1.50.0-linux-x86_64.tar.gz"
-      sha256 "0390bcc90dd195d69c46ce5cba53dc43285d5a071334e8d9ed285d7b376c2fe4"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.51.1/agent-toolkit-1.51.1-linux-x86_64.tar.gz"
+      sha256 "e278100183cbe89fee4a906c07d7a7dcefa407e048ceb872986694d806fb7ef9"
     end
     on_arm do
-      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.50.0/agent-toolkit-1.50.0-linux-arm64.tar.gz"
-      sha256 "8b84e0ca93c0b169bed0ada0e935b32998115a634cbeccb6449daf185e382f33"
+      url "https://github.com/ulises-jeremias/agent-toolkit/releases/download/v1.51.1/agent-toolkit-1.51.1-linux-arm64.tar.gz"
+      sha256 "38ff0ff4ccc3a428606858f0db5517310a48a083337347e77151216378857268"
     end
   end
 
